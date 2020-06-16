@@ -1,16 +1,21 @@
 package com.scy.fileupload.controller;
 
-import ch.qos.logback.core.util.FileUtil;
+//import ch.qos.logback.core.util.FileUtil;
+
 import com.alibaba.fastjson.JSONObject;
+import com.scy.fileupload.util.FileUtil;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 //参考：https://juejin.im/post/59991fd4f265da24934af074#heading-6
+@Controller
 public class FileUpload {
-
-
-
 
     /**
      *
@@ -40,12 +45,16 @@ public class FileUpload {
     @ResponseBody
     @RequestMapping(value = "/BigFileUp")
     public String fileUpload(String guid, String md5value, String chunks, String chunk, String id, String name,
-                             String type, String lastModifiedDate, int size, MultipartFile file) {
+                             String type, String lastModifiedDate, int size, MultipartFile file, HttpServletRequest request) {
         String fileName;
-        JSONObject result=new JSONObject();
+        JSONObject result = new JSONObject();
+        System.out.println(chunk);
         try {
             int index;
             String uploadFolderPath = FileUtil.getRealPath(request);
+
+            uploadFolderPath = "E:\\files";
+            System.out.println(uploadFolderPath);
 
             String mergePath = uploadFolderPath + "\\fileDate\\" + id + "\\";
             String ext = name.substring(name.lastIndexOf("."));

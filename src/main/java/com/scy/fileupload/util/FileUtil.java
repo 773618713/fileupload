@@ -14,17 +14,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ibot.gridtraining.entity.DataFile;
-import com.ibot.gridtraining.entity.UploadInfo;
+/*import com.ibot.gridtraining.entity.DataFile;
+import com.ibot.gridtraining.entity.UploadInfo;*/
 
 public class FileUtil {
 
-    public DataFile upload(HttpServletRequest request, MultipartFile[] myfiles, String fileT, String modelCode)
+    /*public DataFile upload(HttpServletRequest request, MultipartFile[] myfiles, String fileT, String modelCode)
             throws Exception {
         DataFile dataFile = new DataFile();
 
@@ -103,7 +106,7 @@ public class FileUtil {
                 File.separator+"fileDate" +File.separator + fileT + File.separator + year.format(date) + File.separator + m.format(date) + File.separator + d.format(date));
         dataFile.setNewName(modelCode + newName);
         return dataFile;
-    }
+    }*/
 
     public static void deleteFile(HttpServletRequest request, List<String> filePath) {
         String realPath = request.getSession().getServletContext().getRealPath(File.separator);
@@ -147,12 +150,12 @@ public class FileUtil {
         File fileDirectory = new File(savePath);
         synchronized (uploadDirectory) {
             if (!uploadDirectory.exists()) {
-                if (!uploadDirectory.mkdir()) {
+                if (!uploadDirectory.mkdirs()) {
                     throw new Exception("保存文件的父文件夹创建失败！路径为：" + savePath);
                 }
             }
             if (!fileDirectory.exists()) {
-                if (!fileDirectory.mkdir()) {
+                if (!fileDirectory.mkdirs()) {
                     throw new Exception("文件夹创建失败！路径为：" + savePath);
                 }
             }
@@ -226,6 +229,7 @@ public class FileUtil {
                 return item.getMd5().equals(md5);
             }
         }).distinct().collect(Collectors.toList()).size();
+
         boolean bool = (size == Integer.parseInt(chunks));
         if (bool) {
             synchronized (uploadInfoList) {
@@ -301,17 +305,17 @@ public class FileUtil {
         File fileDirectory = new File(filePath);
         synchronized (fileDirectory) {
             if (!fileDirectory.exists()) {
-                if (!fileDirectory.mkdir()) {
+                if (!fileDirectory.mkdirs()) {
                     throw new Exception("保存文件的父文件夹创建失败！路径为：" + fileDirectory);
                 }
             }
             if (!fileDirectory.exists()) {
-                if (!fileDirectory.mkdir()) {
+                if (!fileDirectory.mkdirs()) {
                     throw new Exception("文件夹创建失败！路径为：" + fileDirectory);
                 }
             }
         }
-
+System.out.println(filePath + newName);
         /* 创建输出流，写入数据，合并分块 */
         OutputStream outputStream = new FileOutputStream(filePath + newName);
         byte[] buffer = new byte[1024];
