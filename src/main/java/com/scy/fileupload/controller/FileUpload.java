@@ -66,7 +66,7 @@ public class FileUpload {
                 // 将文件分块保存到临时文件夹里，便于之后的合并文件
                 FileUtil.saveFile(mergePath, fileName, file, request);
                 // 验证所有分块是否上传成功，成功的话进行合并
-                FileUtil.Uploaded(md5value, guid, chunk, chunks, mergePath, fileName, ext, request);
+                FileUtil.Uploaded(md5value, guid, chunk, chunks, uploadFolderPath, mergePath, fileName, ext, request);
             } else {
                 SimpleDateFormat year = new SimpleDateFormat("yyyy");
                 SimpleDateFormat m = new SimpleDateFormat("MM");
