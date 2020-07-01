@@ -46,6 +46,14 @@ public class FileUpload {
     @RequestMapping(value = "/BigFileUp")
     public String fileUpload(String guid, String md5value, String chunks, String chunk, String id, String name,
                              String type, String lastModifiedDate, int size, MultipartFile file, HttpServletRequest request) {
+
+        /*try {
+            if (chunk.equals("0"))
+            Thread.sleep(30000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+
         String fileName;
         JSONObject result = new JSONObject();
         System.out.println(chunk);
@@ -91,4 +99,29 @@ public class FileUpload {
         result.put("msg", "上传成功");
         return result.toString();
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/checkFile")
+    public Object checkFile(String md5File, HttpServletRequest request) {
+        System.out.println("文件验证！");
+        System.out.println("md5File="+md5File);
+        return false;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/checkChunk")
+    public Object checkChunk(String md5File,String chunk, HttpServletRequest request) {
+        System.out.println("切片验证！");
+        System.out.println("md5File="+md5File+"chunk="+chunk);
+        return false;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/merge")
+    public Object merge(String md5File, String name, String chunks, HttpServletRequest request) {
+        System.out.println("合并切片！");
+        System.out.println("md5File="+md5File+"name="+name+"chunksTotal="+chunks);
+        return true;
+    }
+
 }
