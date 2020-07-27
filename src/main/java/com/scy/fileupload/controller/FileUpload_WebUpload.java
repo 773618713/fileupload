@@ -1,7 +1,5 @@
 package com.scy.fileupload.controller;
 
-//import ch.qos.logback.core.util.FileUtil;
-
 import com.alibaba.fastjson.JSONObject;
 import com.scy.fileupload.util.FileUtil;
 import org.springframework.stereotype.Controller;
@@ -13,32 +11,23 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-//参考：https://juejin.im/post/59991fd4f265da24934af074#heading-6
+//参考：https://blog.csdn.net/qq_25775675/article/details/106899202
 @Controller
-public class FileUpload {
+public class FileUpload_WebUpload {
 
     /**
-     *
-     * @Description:
-     *             接受文件分片，合并分片
-     * @param guid
-     *             可省略；每个文件有自己唯一的guid，后续测试中发现，每个分片也有自己的guid，所以不能使用guid来确定分片属于哪个文件。
-     * @param md5value
-     *             文件的MD5值
-     * @param chunks
-     *             当前所传文件的分片总数
-     * @param chunk
-     *             当前所传文件的当前分片数
-     * @param id
-     *             文件ID，如WU_FILE_1，后面数字代表当前传的是第几个文件,后续使用此ID来创建临时目录，将属于该文件ID的所有分片全部放在同一个文件夹中
-     * @param name
-     *             文件名称，如07-中文分词器和业务域的配置.avi
-     * @param type
-     *             文件类型，可选，在这里没有用到
+     * @param guid             可省略；每个文件有自己唯一的guid，后续测试中发现，每个分片也有自己的guid，所以不能使用guid来确定分片属于哪个文件。
+     * @param md5value         文件的MD5值
+     * @param chunks           当前所传文件的分片总数
+     * @param chunk            当前所传文件的当前分片数
+     * @param id               文件ID，如WU_FILE_1，后面数字代表当前传的是第几个文件,后续使用此ID来创建临时目录，将属于该文件ID的所有分片全部放在同一个文件夹中
+     * @param name             文件名称，如07-中文分词器和业务域的配置.avi
+     * @param type             文件类型，可选，在这里没有用到
      * @param lastModifiedDate 文件修改日期，可选，在这里没有用到
-     * @param size  当前所传分片大小，可选，没有用到
-     * @param file  当前所传分片
+     * @param size             当前所传分片大小，可选，没有用到
+     * @param file             当前所传分片
      * @return
+     * @Description: 接受文件分片，合并分片
      * @author: xiangdong.she
      * @date: Aug 20, 2017 12:37:56 PM
      */
@@ -47,9 +36,10 @@ public class FileUpload {
     public String fileUpload(String guid, String md5value, String chunks, String chunk, String id, String name,
                              String type, String lastModifiedDate, int size, MultipartFile file, HttpServletRequest request) {
 
-        /*try {
+       /* try {
+       //这里进行模拟阻塞,可以看到文件是单线程上传。
             if (chunk.equals("0"))
-            Thread.sleep(30000);
+                Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
@@ -60,7 +50,6 @@ public class FileUpload {
         try {
             int index;
             String uploadFolderPath = FileUtil.getRealPath(request);
-
             uploadFolderPath = "E:\\files";
             System.out.println(uploadFolderPath);
 
@@ -104,15 +93,15 @@ public class FileUpload {
     @RequestMapping(value = "/checkFile")
     public Object checkFile(String md5File, HttpServletRequest request) {
         System.out.println("文件验证！");
-        System.out.println("md5File="+md5File);
+        System.out.println("md5File=" + md5File);
         return false;
     }
 
     @ResponseBody
     @RequestMapping(value = "/checkChunk")
-    public Object checkChunk(String md5File,String chunk, HttpServletRequest request) {
+    public Object checkChunk(String md5File, String chunk, HttpServletRequest request) {
         System.out.println("切片验证！");
-        System.out.println("md5File="+md5File+"chunk="+chunk);
+        System.out.println("md5File=" + md5File + "chunk=" + chunk);
         return false;
     }
 
@@ -120,7 +109,7 @@ public class FileUpload {
     @RequestMapping(value = "/merge")
     public Object merge(String md5File, String name, String chunks, HttpServletRequest request) {
         System.out.println("合并切片！");
-        System.out.println("md5File="+md5File+"name="+name+"chunksTotal="+chunks);
+        System.out.println("md5File=" + md5File + "name=" + name + "chunksTotal=" + chunks);
         return true;
     }
 

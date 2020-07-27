@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>使用Ajax方式上传文件（使用bootstrap样式）</title>
+    <link rel="stylesheet" type="text/css" href="css/upload_ajax.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/upload_ajax.js"></script>
+</head>
+<body>
+<div class="content">
+    <div class="conheight">
+        <div style="position: relative;display: inline-block;margin-top: 60px">
+            <form class="form-horizontal uploadForm" id="uploadForm" enctype="multipart/form-data">
+                <div class="btn uploadBtn br0">
+                    <i class="fe fe-upload"></i>
+                    <input type="file" id="uploadFile" class="file_input" name="file" accept=".zip"/> 选择文件
+                </div>
+            </form>
+            <div style="display: none;position: absolute;top: 40px;left: 0;background: rgba(0,0,0,.6);color: #fff;z-index: 999;width: 400px;padding: 15px;"
+                 class="progress-body p15">
+                <span>上传状态：</span>
+                <span class="progress-info">请选择文件</span>
+                <br>
+                <span>上传进度：</span>
+                <progress></progress>
+                <percentage> 0%</percentage>
+                <br>
+                <span>上传速度：</span>
+                <span class="progress-speed">0 M/S, 0/0M</span>
+            </div>
+        </div>
+        <span>{{dataInfo.file_name}}</span>
+        <a href="{{dataInfo.file_link}}" class="downloadBtn"><i class="fe fe-download"></i> 下载</a>
+        <p class="prompt" style="margin-top: 10px;">支持格式：zip压缩文件（大小限制不能超过100M）</p>
+        <p class="prompt" style="line-height: 20px;">温馨提示：上传完材料后记得点击“完成”按钮哦</p>
+    </div>
+    <button type="button" ng-click="submit()" style="margin-left:20px">完成</button>
+    <button type="button" ng-click="pre()" ng-hide="form.show">上一步</button>
+</div>
+</body>
+</html>
