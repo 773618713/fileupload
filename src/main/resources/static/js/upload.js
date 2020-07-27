@@ -1,49 +1,49 @@
 $(function () {
     WebUploader.Uploader.register({
-        "before-send-file":"beforeSendFile",  // 整个文件上传前
-        "before-send":"beforeSend",  // 每个分片上传前
+        "before-send-file": "beforeSendFile",  // 整个文件上传前
+        "before-send": "beforeSend",  // 每个分片上传前
         "after-send-file": "afterSendFile"  // 分片上传完毕
-    },{
+    }, {
         //时间点1：所有分块进行上传之前调用此函数 ，检查文件存不存在
-        beforeSendFile:function(file){
+        beforeSendFile: function (file) {
             var deferred = WebUploader.Deferred();
             //md5File = hex_md5(file.name+file.size);//根据文件名称，大小确定文件唯一标记，这种方式不赞成使用
             md5File = file.wholeMd5;
             $.ajax({
-                type:"POST",
-                url:"/checkFile",
-                data:{
+                type: "POST",
+                url: "/checkFile",
+                data: {
                     md5File: md5File, //文件唯一标记
                 },
                 async: false,  // 同步
-                dataType:"json",
-                success:function(response){
-                    if(response){  //文件存在，跳过 ，提示文件存在
+                dataType: "json",
+                success: function (response) {
+                    if (response) {  //文件存在，跳过 ，提示文件存在
                         $('#' + file.id).find('p.state').text("file exist");
-                    }else{
+                    } else {
                         deferred.resolve();  //文件不存在或不完整，发送该文件
                     }
                 }
-            } , function (jqXHR, textStatus, errorThrown) { //任何形式的验证失败，都触发重新上传
+            }, function (jqXHR, textStatus, errorThrown) { //任何形式的验证失败，都触发重新上传
                 deferred.resolve();
-            } );
+            });
             return deferred.promise();
         },
         //时间点2：如果有分块上传，则每个分块上传之前调用此函数  ，判断分块存不存在
-        beforeSend:function(block){
+        beforeSend: function (block) {
             var deferred = WebUploader.Deferred();
             $.ajax({
-                type:"POST",
-                url:"/checkChunk",
-                data:{
+                type: "POST",
+                url: "/checkChunk",
+                data: {
                     md5File: md5File,  //文件唯一标记
-                    chunk:block.chunk,  //当前分块下标
+                    chunk: block.chunk,  //当前分块下标
                 },
-                dataType:"json",
-                success:function(response){
-                    if(response){
+                dataType: "json",
+                success: function (response) {
+                    if (response) {
                         deferred.reject(); //分片存在，跳过
-                    }else{
+                    } else {
                         deferred.resolve();  //分块不存在或不完整，重新发送该分块内容
                     }
                 }
@@ -54,7 +54,7 @@ $(function () {
         },
         //时间点3：分片上传完成后，通知后台合成分片
         afterSendFile: function (file) {
-            var chunksTotal = Math.ceil(file.size / (10*1024*1024));
+            var chunksTotal = Math.ceil(file.size / (10 * 1024 * 1024));
             if (chunksTotal > 1) {
                 //合并请求
                 var deferred = WebUploader.Deferred();
@@ -69,11 +69,11 @@ $(function () {
                     cache: false,
                     async: false,  // 同步
                     dataType: "json",
-                    success:function(response){
-                        if(response){
+                    success: function (response) {
+                        if (response) {
                             $('#' + file.id).find('p.state').text('upload success');
                             $('#' + file.id).find('.progress').fadeOut();
-                        }else{
+                        } else {
                             $('#' + file.id).find('p.state').text('merge error');
                             deferred.reject();
                         }
@@ -112,13 +112,14 @@ $(function () {
         //    mimeTypes: 'video/*'
         //}
     });
+
     // 当有文件被添加进队列的时候
     uploader.on('fileQueued', function (file) {
         $list.append('<div id="' + file.id + '" class="item">' +
             '<h4 class="info">' + file.name + '<button type="button" fileId="' + file.id + '" class="btn btn-danger btn-delete"><span class="glyphicon glyphicon-trash"></span></button></h4>' +
-            '<p class="state">正在计算文件MD5...请等待计算完毕后再点击上传！</p><input type="text" id="s_WU_FILE_'+flie_count+'" />' +
+            '<p class="state">正在计算文件MD5...请等待计算完毕后再点击上传！</p><input type="text" id="s_WU_FILE_' + flie_count + '" />' +
             '</div>');
-        console.info("id=file_"+flie_count);
+        console.info("id=file_" + flie_count);
         flie_count++;
 
         //删除要上传的文件
@@ -134,22 +135,23 @@ $(function () {
 
         //md5计算
         uploader.md5File(file)
-            .progress(function(percentage) {
+            .progress(function (percentage) {
                 console.log('Percentage:', percentage);
             })
             // 完成
             .then(function (fileMd5) { // 完成
                 var end = +new Date();
-                console.log("before-send-file  preupload: file.size="+file.size+" file.md5="+fileMd5);
+                console.log("before-send-file  preupload: file.size=" + file.size + " file.md5=" + fileMd5);
                 file.wholeMd5 = fileMd5;//获取到了md5
                 //uploader.options.formData.md5value = file.wholeMd5;//每个文件都附带一个md5，便于实现秒传
 
                 $('#' + file.id).find('p.state').text('MD5计算完毕，可以点击上传了');
-                console.info("MD5="+fileMd5);
+                console.info("MD5=" + fileMd5);
             });
 
 
     });
+
     // 文件上传过程中创建进度条实时显示。
     uploader.on('uploadProgress', function (file, percentage) {
         var $li = $('#' + file.id),
@@ -166,7 +168,7 @@ $(function () {
     });
 
     //发送前填充数据
-    uploader.on( 'uploadBeforeSend', function( block, data ) {
+    uploader.on('uploadBeforeSend', function (block, data) {
         // block为分块数据。
 
         // file为分块对应的file对象。
@@ -174,31 +176,33 @@ $(function () {
         var fileMd5 = file.wholeMd5;
         // 修改data可以控制发送哪些携带数据。
 
-        console.info("fileName= "+file.name+" fileMd5= "+fileMd5+" fileId= "+file.id);
-        console.info("input file= "+ flie_count);
+        console.info("fileName= " + file.name + " fileMd5= " + fileMd5 + " fileId= " + file.id);
+        console.info("input file= " + flie_count);
         // 将存在file对象中的md5数据携带发送过去。
         data.md5value = fileMd5;//md5
-        data.fileName_ = $("#s_"+file.id).val();
-        console.log("fileName_: "+data.fileName_);
+        data.fileName_ = $("#s_" + file.id).val();
+        console.log("fileName_: " + data.fileName_);
         // 删除其他数据
         // delete data.key;
-        if(block.chunks>1){ //文件大于chunksize 分片上传
+        if (block.chunks > 1) { //文件大于chunksize 分片上传
             data.isChunked = true;
-            console.info("data.isChunked= "+data.isChunked);
-        }else{
+            console.info("data.isChunked= " + data.isChunked);
+        } else {
             data.isChunked = false;
-            console.info("data.isChunked="+data.isChunked);
+            console.info("data.isChunked=" + data.isChunked);
         }
 
     });
 
-
+    // 文件上传成功后会调用
     uploader.on('uploadSuccess', function (file) {
         $('#' + file.id).find('p.state').text('已上传');
         $('#' + file.id).find(".progress").find(".progress-bar").attr("class", "progress-bar progress-bar-success");
         $('#' + file.id).find(".info").find('.btn').fadeOut('slow');//上传完后删除"删除"按钮
         $('#StopBtn').fadeOut('slow');
     });
+
+    // 文件上传失败后会调用
     uploader.on('uploadError', function (file) {
         $('#' + file.id).find('p.state').text('上传出错');
         //上传出错后进度条变红
@@ -216,18 +220,23 @@ $(function () {
             uploader.retry(uploader.getFile($(this).attr("fileId")));
         });
     });
+
+    // 文件上传完毕后会调用（不管成功还是失败）
     uploader.on('uploadComplete', function (file) {//上传完成后回调
         //$('#' + file.id).find('.progress').fadeOut();//上传完删除进度条
         //$('#' + file.id + 'btn').fadeOut('slow')//上传完后删除"删除"按钮
     });
+
     uploader.on('uploadFinished', function () {
         //上传完后的回调方法
         //alert("所有文件上传完毕");
         //提交表单
     });
+
     $("#UploadBtn").click(function () {
         uploader.upload();//上传
     });
+
     $("#StopBtn").click(function () {
         console.log($('#StopBtn').attr("status"));
         var status = $('#StopBtn').attr("status");
@@ -235,7 +244,7 @@ $(function () {
             console.log("当前按钮是暂停，即将变为继续");
             $("#StopBtn").html("继续上传");
             $("#StopBtn").attr("status", "continuous");
-            console.log("当前所有文件==="+uploader.getFiles());
+            console.log("当前所有文件===" + uploader.getFiles());
             console.log("=============暂停上传==============");
             uploader.stop(true);
             console.log("=============所有当前暂停的文件=============");
@@ -249,6 +258,7 @@ $(function () {
             uploader.upload(uploader.getFiles("interrupt"));
         }
     });
+
     uploader.on('uploadAccept', function (file, response) {
         if (response._raw === '{"error":true}') {
             return false;
